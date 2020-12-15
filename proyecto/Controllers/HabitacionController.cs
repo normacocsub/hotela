@@ -6,20 +6,24 @@ using System.Linq;
 using Entity;
 using Datos;
 using HabitacionModel;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using proyecto.Hubs;
 
 [Route("api/[controller]")]
 [ApiController]
 public class HabitacionController : ControllerBase
 {
     private readonly HabitacionService _habitacionService;
-    public IConfiguration Configuration { get; }
-    public HabitacionController(HotelContext context)
+    private readonly IHubContext<SignalHub> _hubContext;
+    public HabitacionController(HotelContext context,IHubContext<SignalHub> hubContext)
     {
         _habitacionService = new HabitacionService(context);
+        _hubContext = hubContext;
     }
     // GET: api/Persona​
     [HttpGet]
-    public ActionResult<HabitacionViewModel> Gets()
+    public  ActionResult<HabitacionViewModel> Gets()
     {
         var response = _habitacionService.ConsultarTodos();
         if (response.Error)
@@ -44,7 +48,7 @@ public class HabitacionController : ControllerBase
     // POST: api/Persona​
 
     [HttpPost]
-    public ActionResult<HabitacionViewModel> Post(HabitacionInputModel habitacionInput)
+    public async Task<ActionResult<HabitacionViewModel>> Post(HabitacionInputModel habitacionInput)
     {
         Habitacion habitacion = MapearHabitacion(habitacionInput);
         var response = _habitacionService.Guardar(habitacion);
@@ -52,7 +56,9 @@ public class HabitacionController : ControllerBase
         {
             return BadRequest(response.Mensaje);
         }
-        return Ok(response.Habitacion);
+        var habitacionview = new HabitacionViewModel (response.Habitacion);
+        await _hubContext.Clients.All.SendAsync("habitacionRegistrada", habitacionview);
+        return Ok (habitacionview);
     }
 
     // DELETE: api/Persona/5​

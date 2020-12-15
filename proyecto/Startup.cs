@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using proyecto.Config;
+using proyecto.Hubs;
 
 namespace proyecto {
     public class Startup {
@@ -25,6 +26,7 @@ namespace proyecto {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
             services.AddControllersWithViews ();
+            services.AddSignalR();
             // In production, the Angular files will be served from this directory
             #region    configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSetting");
@@ -114,6 +116,7 @@ namespace proyecto {
                 endpoints.MapControllerRoute (
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                    endpoints.MapHub<SignalHub>("/signalHub");
             });
 
             app.UseSwagger ();

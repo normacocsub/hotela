@@ -44,8 +44,9 @@ namespace Entity
 
         public void CalcularFactura(Habitacion habitacion)
         {
-            Iva = habitacion.Precio * 0.19m;
-            Total = habitacion.Precio * Dias;
+            Habitacion = habitacion;
+            Iva = Habitacion.Precio * 0.19m;
+            Total = Habitacion.Precio * Dias;
             SubTotal = Total / 1.19m;
         }
         

@@ -21,6 +21,9 @@ namespace ReservaModel
 
         public string IdHabitacion { get; set; }
         public int Dias { get; set; }
+        public Habitacion Habitacion { get; set; }
+        
+        
         
         
     }
@@ -39,6 +42,7 @@ namespace ReservaModel
             IdHabitacion = reserva.IdHabitacion;
             Dias = reserva.Dias;
             SubTotal = reserva.SubTotal;
+            Habitacion = reserva.Habitacion;
         }
     }
 }

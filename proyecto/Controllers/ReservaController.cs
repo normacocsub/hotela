@@ -7,6 +7,9 @@ using ReservaModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.SignalR;
+using proyecto.Hubs;
+using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -14,11 +17,12 @@ public class ReservaController : ControllerBase
 {
     private readonly ReservaService _reservaService;
 
-    public IConfiguration Configuration { get; }
+    private readonly IHubContext<SignalHub> _hubContext;
 
-    public ReservaController(HotelContext context)
+    public ReservaController(HotelContext context, IHubContext<SignalHub> hubContext)
     {
         _reservaService = new ReservaService(context);
+        _hubContext = hubContext;
     }
 
     // GET: api/Persona​
@@ -53,7 +57,7 @@ public class ReservaController : ControllerBase
 
     // POST: api/Persona​
     [HttpPost]
-    public ActionResult<ReservaViewModel> Post(ReservaInputModel reservaInput)
+    public async Task<ActionResult<ReservaViewModel>> Post(ReservaInputModel reservaInput)
     {
         Reserva reserva = MapearReserva(reservaInput);
         var response = _reservaService.Guardar(reserva);
@@ -65,7 +69,9 @@ public class ReservaController : ControllerBase
             detallesproblemas.Status = StatusCodes.Status500InternalServerError;
             return BadRequest(detallesproblemas);
         }
-        return Ok(response.Reserva);
+        var reservaview = new ReservaViewModel (response.Reserva);
+        await _hubContext.Clients.All.SendAsync("reservaRegistrada", reservaview);
+        return Ok (reservaview);
     }
 
     // DELETE: api/Persona/5​

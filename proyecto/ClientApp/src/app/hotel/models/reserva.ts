@@ -16,4 +16,5 @@ export class Reserva extends Habitacion {
     precio: number;
     dias: number;
     subTotal: number;
+    habitacion: Habitacion;
 }

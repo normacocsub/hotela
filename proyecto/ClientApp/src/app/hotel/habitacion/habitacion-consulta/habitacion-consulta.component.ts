@@ -1,7 +1,9 @@
 import { JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HabitacionService } from 'src/app/services/habitacion.service';
+import { ReservaService } from 'src/app/services/reserva.service';
 import { Habitacion } from '../../models/habitacion';
+import { Reserva } from '../../models/reserva';
 
 @Component({
   selector: 'app-habitacion-consulta',
@@ -11,13 +13,28 @@ import { Habitacion } from '../../models/habitacion';
 export class HabitacionConsultaComponent implements OnInit {
   habitaciones: Habitacion[];
   searchText: string;
-  constructor(private habitacionService: HabitacionService) { }
+  constructor(private habitacionService: HabitacionService, private reservaService: ReservaService) { }
 
   ngOnInit(){
+    this.habitaciones = [];
     this.habitacionService.get().subscribe(result => {
       this.habitaciones = result;
-      });
+    });
+      this.actualizarListaSignal();
   }
+
+  private actualizarListaSignal(){
+    this.habitacionService.signalRecived.subscribe((habitacion: Habitacion) => {
+      this.habitaciones.push(habitacion);
+    });
+    console.log('a');
+    this.reservaService.signalRecived.subscribe((reserva: Reserva) => {
+      this.habitacionService.get().subscribe(result => {
+        this.habitaciones = result;
+      });
+    });
+  }
+
 
     /*Ordenar en la tabla*/
 

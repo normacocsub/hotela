@@ -1,9 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { HandleHttpErrorService } from '../@base/handle-http-error.service';
 import { Habitacion } from '../hotel/models/habitacion';
+import * as singnalR from '@aspnet/signalr';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -14,11 +15,38 @@ const httpOptions = {
 })
 export class HabitacionService {
   baseUrl: string;
+  private hubConnection: singnalR.HubConnection;
+  signalRecived = new EventEmitter<Habitacion>();
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') baseUrl: string,
     private handleErrorService: HandleHttpErrorService) {
     this.baseUrl = baseUrl;
+    this.buildConnection();  this.startConnection();
+  }
+  private buildConnection = () => {
+    this.hubConnection = new singnalR.HubConnectionBuilder()
+    .withUrl(this.baseUrl + "signalHub")
+    .build();
+  }
+  private startConnection = () => {
+    this.hubConnection
+    .start()
+    .then(() => {
+      console.log("Iniciando signal");
+      this.registerSignalEvents();
+    })
+    .catch(err => {
+      console.log("Error en el signal" + err);
+      setTimeout(function() {
+        this.startConnection();
+      }, 3000);
+    });
+  }
+  private registerSignalEvents(){
+    this.hubConnection.on("habitacionRegistrada", (data: Habitacion) => {
+      this.signalRecived.emit(data);
+    });
   }
   get(): Observable<Habitacion[]> {
     return this.http.get<Habitacion[]>(this.baseUrl + 'api/Habitacion')
