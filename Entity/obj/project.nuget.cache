@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "kD5A4FRckxOsx5I6X0W1MxDRfpJn4374KfBl0SKXDu9UxeNxwPYpd7EAW+ACr+DECPorek8nzFpOSFn3nZGU0Q==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\norma\\Desktop\\proyectohotel-main\\Entity\\Entity.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\norma\\.nuget\\packages\\system.componentmodel.annotations\\4.7.0\\system.componentmodel.annotations.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,35 @@
+
+<title>CONSULTAR HABITACIONES</title>
+<br>
+
+<form class="form-inline" class="container" id="Buscador">
+    <input class="form-control mr-sm-2" name="filtroHabitacion" [(ngModel)]="searchText" type="text" placeholder="Buscar por # Habitacion" aria-label="Search">
+</form><br><br>
+
+<div class="table-responsive" id="rcorners1">
+
+<table class="table table-bordered" id="myTable" *ngIf='habitaciones && habitaciones.length'>
+        <thead>
+            <tr class="thead-dark">
+                <th (click)="sortTable(0)" scope="col">#</th>
+                <th (click)="sortTable(1)">Numero de Habitacion >> </th>
+                <th (click)="sortTable(2)">Tipo de Habitacion >></th>
+                <th (click)="sortTable(3)">Estado >></th>
+                <th (click)="sortTable(4)">Numero de Personas >></th>
+                <th (click)="sortTable(5)">Precio >></th>
+                
+            </tr>
+        </thead>
+        <tbody id="tbodypulsacion" class="table-primary">
+            <tr *ngFor="let habitacion of habitaciones|filtroHabitacion:searchText; index as i ">
+                <td scope="row">{{ i + 1 }}</td>
+                <td>{{ habitacion.idHabitacion }} </td>
+                <td>{{ habitacion.tipo }}</td>
+                <td>{{ habitacion.estado }}</td>
+                <td>{{ habitacion.nPersonas }}</td>
+                <td>{{ habitacion.precio | currency: 'COP $ ' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<br><br><br><br><br><br><br>
